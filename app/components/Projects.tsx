@@ -58,7 +58,6 @@ export default function Projects() {
 
   const prev = () => { setHovered(false); setPaused(true); setCurrent((c) => (c - 1 + projects.length) % projects.length); };
   const next = () => { setHovered(false); setPaused(true); setCurrent((c) => (c + 1) % projects.length); };
-  const p = projects[current];
 
   // DeviceFrameset uses transform:scale so layout stays at full 960×600 frame size.
   // Compensate by pulling in the wrapper with negative margins on mobile only.

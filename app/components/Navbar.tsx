@@ -18,7 +18,6 @@ export default function Navbar() {
   const [active, setActive] = useState("Home");
 
   useEffect(() => {
-    const sections = navLinks.map((l) => l.label);
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {

@@ -78,7 +78,7 @@ export default function Work() {
   const [open, setOpen] = useState<Set<number>>(new Set([0]));
   const toggle = (i: number) => setOpen(prev => {
     const next = new Set(prev);
-    next.has(i) ? next.delete(i) : next.add(i);
+    if (next.has(i)) { next.delete(i); } else { next.add(i); }
     return next;
   });
 
