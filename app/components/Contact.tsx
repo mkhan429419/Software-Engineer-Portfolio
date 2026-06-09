@@ -64,7 +64,7 @@ export default function Contact() {
             Get in touch.
           </h2>
           <p className="text-olive-2 text-[14.5px] leading-relaxed max-w-lg">
-            I&rsquo;m actively looking for engineering roles. If you&rsquo;re working on
+            If you&rsquo;re working on
             something interesting, or just want to chat — I&rsquo;d love to hear from you.
           </p>
         </motion.div>

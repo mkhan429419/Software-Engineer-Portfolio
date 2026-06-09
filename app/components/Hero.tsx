@@ -243,21 +243,6 @@ export default function Hero() {
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center justify-center flex-1 px-6 md:px-16 lg:px-24 py-12 text-center">
 
-        {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          whileHover={{ y: -3, scale: 1.04, borderColor: "rgba(24,40,16,0.7)" }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="inline-flex items-center gap-2 border border-olive/50 rounded-full px-4 py-1.5 mb-10 cursor-default"
-          style={{ transition: "box-shadow 0.2s ease" }}
-        >
-          <span className="relative flex h-1.5 w-1.5 flex-shrink-0">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-olive-3 opacity-60" />
-            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-olive-3" />
-          </span>
-          <span className="font-sans text-[12px] text-olive">Open to work</span>
-        </motion.div>
 
         {/* Large serif name — photo embedded inline like Marimba reference */}
         <div className="overflow-hidden mb-3">
