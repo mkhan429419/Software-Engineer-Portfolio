@@ -2,26 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+/* react-device-frameset — Marvel Devices CSS */
+@import './marvel-devices.css';
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+*, *::before, *::after {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #EDEBE1;
+  overflow-x: hidden;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #EDEBE1;
+  color: #2B3D18;
+  overflow-x: hidden;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #EDEBE1; }
+::-webkit-scrollbar-thumb { background: #B0BB98; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #7A8B60; }
+
+::selection { background: #D8DDC8; color: #2B3D18; }
+
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .text-balance { text-wrap: balance; }
+
+  .section-wrap {
+    @apply max-w-6xl mx-auto px-8 md:px-16 lg:px-24;
+  }
+
+  .serif-label {
+    @apply font-serif text-olive-3 text-sm italic font-medium;
+  }
+
+  .mono-label {
+    @apply font-mono text-[10px] tracking-[0.08em] uppercase text-olive-3;
   }
 }
