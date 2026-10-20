@@ -1,23 +1,11 @@
-"use client";
-
-import { motion } from "framer-motion";
-
 export default function Footer() {
   return (
-    <motion.footer
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="bg-cream border-t border-olive-5 py-8"
-    >
-      <div className="section-wrap flex flex-col sm:flex-row items-center justify-between gap-4">
-        <span className="font-serif font-semibold text-olive">maheen.</span>
-
-        <p className="font-mono text-[10px] text-olive-3">
+    <footer className="bg-paper">
+      <div className="section-wrap py-8 md:py-10">
+        <p className="text-center font-mono text-[15px] leading-snug text-ink md:text-[17px] lg:text-[19px] 2xl:text-[21px]">
           © {new Date().getFullYear()} Maheen Akhtar Khan
         </p>
       </div>
-    </motion.footer>
+    </footer>
   );
 }

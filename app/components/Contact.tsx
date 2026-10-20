@@ -1,22 +1,37 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useRef, useState } from "react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import { ArrowUpRight, CheckCircle } from "lucide-react";
-import { Mail, FileText } from "lucide-react";
-import { GitHubIcon, LinkedInIcon } from "./Icons";
+import PeachButton from "./PeachButton";
+import SectionHead from "./SectionHead";
 
 const contactLinks = [
-  { Icon: Mail,       label: "Email",    value: "pakhtar635@gmail.com",           href: "mailto:pakhtar635@gmail.com",                                             download: false },
-  { Icon: LinkedInIcon, label: "LinkedIn", value: "/in/maheen-akhtar-khan",      href: "https://www.linkedin.com/in/maheen-akhtar-khan-377082267",                download: false },
-  { Icon: GitHubIcon, label: "GitHub",   value: "@mkhan429419",                  href: "https://github.com/mkhan429419",                                          download: false },
-  { Icon: FileText,   label: "CV",       value: "Download CV",                   href: "https://docs.google.com/document/d/1Q19JyPTfHUG_QdYq0lUesaKULfKtckfi53ZgXHi47E0/edit?usp=sharing", download: false },
+  { label: "Email", value: "pakhtar635@gmail.com", href: "mailto:pakhtar635@gmail.com", download: false },
+  {
+    label: "LinkedIn",
+    value: "/in/maheen-akhtar-khan",
+    href: "https://www.linkedin.com/in/maheen-akhtar-khan-377082267",
+    download: false,
+  },
+  { label: "GitHub", value: "@mkhan429419", href: "https://github.com/mkhan429419", download: false },
+  {
+    label: "CV",
+    value: "Download CV",
+    href: "https://docs.google.com/document/d/1Q19JyPTfHUG_QdYq0lUesaKULfKtckfi53ZgXHi47E0/edit?usp=sharing",
+    download: false,
+  },
 ];
+
+/* Frosted white card (like the Wix footer) so text stays readable over the CD. */
+const cardClass = "rounded-[25px] border border-white bg-white/80 p-5 sm:p-6 lg:p-7";
 
 export default function Contact() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const inView = useInView(sectionRef, { margin: "200px 0px" });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,52 +46,68 @@ export default function Contact() {
       if (!res.ok) throw new Error("Failed to send");
       setSent(true);
     } catch {
-      alert("Something went wrong. Please try emailing me directly at pakhtar635@gmail.com");
+      alert("Something went wrong. Please email me directly at pakhtar635@gmail.com");
     } finally {
       setLoading(false);
     }
   };
 
-  const inputClass =
-    "w-full bg-cream border border-olive-5 text-[13.5px] text-olive placeholder-olive-4 px-4 py-3 rounded-xl focus:outline-none focus:border-olive-3 transition-colors duration-150 font-sans";
+  const fieldClass =
+    "w-full border-0 border-b border-ink/30 bg-transparent px-0 py-2.5 text-[15px] text-ink placeholder:text-mute/80 focus:border-ink focus:outline-none focus:ring-0 transition-colors duration-150 font-sans sm:text-[16px] md:py-3";
+
+  const cdImg = (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/footer-cd.png"
+      alt=""
+      draggable={false}
+      className="footer-cd-spin h-full w-full select-none object-contain"
+      style={{ animationPlayState: inView ? "running" : "paused" }}
+    />
+  );
 
   return (
-    <section id="contact" className="bg-cream py-20 md:py-28 relative">
-      {/* Top-right blue-purple — bleeds up into Certifications' lower area */}
-      <div className="pointer-events-none absolute -top-16 right-0 w-[220px] h-[220px] md:-top-40 md:-right-20 md:w-[560px] md:h-[560px] rounded-full" style={{ background: "radial-gradient(circle at 50% 40%, #90B8E0 0%, #C0A0E0 50%, transparent 72%)", filter: "blur(100px)", opacity: 0.28 }} />
-      {/* Top-left coral — bleeds up into Certifications' lower area */}
-      <div className="hidden md:block pointer-events-none absolute -top-32 -left-20 w-[520px] h-[520px] rounded-full" style={{ background: "radial-gradient(circle at 45% 40%, #E87848 0%, #F0A868 50%, transparent 72%)", filter: "blur(100px)", opacity: 0.22 }} />
+    <section ref={sectionRef} id="contact" className="relative isolate overflow-hidden bg-paper py-20 md:py-28">
+      <div className="section-wrap">
+        <SectionHead
+          title="Contact"
+          asideClassName="hidden lg:block"
+          aside={
+            <>
+              Get in touch
+              {/* lg+: sits on the same baseline, starting at the links column */}
+              <span className="absolute hidden whitespace-nowrap lg:inline lg:left-[calc(56%+0.88rem)] xl:left-[calc(56%+1.32rem)]">
+                Or reach out directly
+              </span>
+            </>
+          }
+        />
 
-      <div className="section-wrap relative z-10">
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-14"
-        >
-          <p className="serif-label mb-4">Let&rsquo;s connect</p>
-          <h2
-            className="font-serif font-bold text-olive leading-[0.92] tracking-tight mb-5"
-            style={{ fontSize: "clamp(2.4rem, 5vw, 5rem)" }}
-          >
-            Get in touch.
-          </h2>
-          <p className="text-olive-2 text-[14.5px] leading-relaxed max-w-lg">
-            If you&rsquo;re working on
-            something interesting, or just want to chat — I&rsquo;d love to hear from you.
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-          {/* Left: form */}
+        <div className="relative grid grid-cols-1 gap-10 [--g:2rem] md:gap-12 xl:[--g:3rem] lg:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)] lg:items-start lg:gap-x-8 xl:gap-x-12">
+          {/* Left column wrapper: also anchors the stacked (below lg) CD to the bottom of card 1 */}
+          <div className="relative min-w-0 lg:max-w-[720px]">
+            {/* Stacked layout: CD centred on the gap between the two cards */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 top-[calc(100%+1.25rem)] -z-10 aspect-square w-[min(110vw,32rem)] -translate-x-1/2 -translate-y-1/2 md:top-[calc(100%+1.5rem)] md:w-[min(88vw,40rem)] lg:hidden"
+            >
+              {cdImg}
+            </div>
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className={`min-w-0 ${cardClass}`}
           >
+            {/* Below lg the heading lives inside its card (same as "Or reach out directly") */}
+            <p className="mb-4 font-mono text-[19px] font-normal text-ink sm:text-[21px] md:mb-5 md:text-[26px] lg:hidden">
+              Get in touch
+            </p>
+            <p className="mb-6 max-w-[540px] text-[16px] leading-relaxed text-ink md:mb-8 lg:text-[17px] 2xl:text-[20px]">
+              If you&rsquo;re hiring, collaborating, or working on something interesting - I&rsquo;d love to hear from you.
+            </p>
+
             <AnimatePresence mode="wait">
               {!sent ? (
                 <motion.form
@@ -84,120 +115,131 @@ export default function Contact() {
                   initial={{ opacity: 1 }}
                   exit={{ opacity: 0, y: -8 }}
                   onSubmit={handleSubmit}
-                  className="flex flex-col gap-4"
+                  className="flex flex-col gap-5 md:gap-6"
                 >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-x-6 md:gap-6">
                     <div>
-                      <label className="block mono-label mb-2">Name</label>
+                      <label htmlFor="contact-name" className="mono-label mb-1.5 block">
+                        Name
+                      </label>
                       <input
+                        id="contact-name"
                         type="text"
                         placeholder="Your name"
                         value={form.name}
                         onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                        className={inputClass}
+                        className={fieldClass}
                         required
                       />
                     </div>
                     <div>
-                      <label className="block mono-label mb-2">Email</label>
+                      <label htmlFor="contact-email" className="mono-label mb-1.5 block">
+                        Email
+                      </label>
                       <input
+                        id="contact-email"
                         type="email"
                         placeholder="your@email.com"
                         value={form.email}
                         onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                        className={inputClass}
+                        className={fieldClass}
                         required
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block mono-label mb-2">Message</label>
+                    <label htmlFor="contact-message" className="mono-label mb-1.5 block">
+                      Message
+                    </label>
                     <textarea
-                      rows={6}
+                      id="contact-message"
+                      rows={5}
                       placeholder="Tell me about your project or opportunity..."
                       value={form.message}
                       onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-                      className={`${inputClass} resize-none`}
+                      className={`${fieldClass} min-h-[120px] resize-y sm:min-h-[132px] md:min-h-[144px]`}
                       required
                     />
                   </div>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="flex items-center justify-center gap-2 bg-olive text-cream text-[13px] font-medium rounded-xl px-6 py-3.5 hover:bg-olive-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loading ? (
-                      <>
-                        <span className="w-3.5 h-3.5 border-2 border-cream border-t-transparent rounded-full animate-spin" />
-                        Sending...
-                      </>
-                    ) : (
-                      "Send message →"
-                    )}
-                  </button>
+                  <PeachButton type="submit" disabled={loading} className="mt-1 w-full sm:w-auto sm:min-w-[160px]">
+                    {loading ? "Sending..." : "Send message"}
+                  </PeachButton>
                 </motion.form>
               ) : (
                 <motion.div
                   key="success"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="rounded-2xl bg-cream p-8 flex flex-col gap-4"
+                  className="flex flex-col gap-4 rounded-lg border border-ink bg-peach/20 p-6 md:p-7"
                 >
-                  <CheckCircle size={24} className="text-[#22C55E]" />
+                  <CheckCircle size={22} className="text-ink" aria-hidden />
                   <div>
-                    <p className="font-serif font-semibold text-olive text-xl mb-1">Message sent!</p>
-                    <p className="text-olive-2 text-[13.5px] leading-relaxed">
-                      Thanks for reaching out — I typically respond within 24 hours.
+                    <p className="mb-1 text-[18px] text-ink md:text-[20px]">Message sent</p>
+                    <p className="text-[15px] leading-relaxed text-mute">
+                      Thanks for reaching out - I typically respond within 24 hours.
                     </p>
                   </div>
                   <button
-                    onClick={() => { setSent(false); setForm({ name: "", email: "", message: "" }); }}
-                    className="text-[13px] text-olive-2 hover:text-olive transition-colors self-start"
+                    type="button"
+                    onClick={() => {
+                      setSent(false);
+                      setForm({ name: "", email: "", message: "" });
+                    }}
+                    className="self-start text-[15px] text-ink underline underline-offset-4 transition-colors duration-150 hover:text-mute"
                   >
-                    Send another message →
+                    Send another message
                   </button>
                 </motion.div>
               )}
             </AnimatePresence>
           </motion.div>
+          </div>
 
-          {/* Right: contact links */}
+          {/* Side-by-side layout (lg+): CD centred on the vertical gap between the two cards.
+              Card 1 is capped at 720px, so the gap centre is worked out from the real column widths. */}
+          <div aria-hidden className="pointer-events-none absolute inset-0 hidden lg:block">
+            <div className="absolute left-[calc((min(720px,0.56*(100%-var(--g)))+0.56*(100%-var(--g))+var(--g))/2)] top-1/2 -z-10 aspect-square w-[min(46vw,46rem)] -translate-x-1/2 -translate-y-1/2">
+              {cdImg}
+            </div>
+          </div>
+
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="flex flex-col justify-start"
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.5, ease: "easeOut", delay: 0.06 }}
+            className={`min-w-0 ${cardClass}`}
           >
-            <p className="mono-label mb-6">Or reach out directly</p>
-            <div className="flex flex-col rounded-2xl bg-cream overflow-hidden">
-              {contactLinks.map((link, i) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  target={link.download ? "_self" : "_blank"}
-                  rel="noopener noreferrer"
-                  {...(link.download ? { download: true } : {})}
-                  className={`group flex items-center justify-between px-6 py-5 hover:bg-cream-dark transition-colors duration-150 ${
-                    i < contactLinks.length - 1 ? "border-b border-olive-5" : ""
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <link.Icon size={14} className="text-olive-3 group-hover:text-olive transition-colors" />
-                    <span className="text-[13.5px] text-olive-2 group-hover:text-olive transition-colors">
+            <p className="mb-4 font-mono text-[19px] font-normal text-ink sm:text-[21px] md:mb-5 md:text-[26px] lg:hidden">
+              Or reach out directly
+            </p>
+            <ul className="flex flex-col gap-1">
+              {contactLinks.map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    target={link.download ? "_self" : "_blank"}
+                    rel="noopener noreferrer"
+                    {...(link.download ? { download: true } : {})}
+                    className="group flex items-baseline justify-between gap-4 border-b border-ink/15 py-3.5 transition-colors duration-150 last:border-b-0 hover:text-mute md:py-4"
+                  >
+                    <span className="shrink-0 font-sans text-[15px] font-normal leading-snug text-ink sm:text-[16px]">
                       {link.label}
                     </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-mono text-[12px] text-olive-2 group-hover:text-olive transition-colors">
-                      {link.value}
+                    <span className="flex min-w-0 items-baseline gap-2">
+                      <span className="break-all font-mono text-[15px] leading-snug text-mute transition-colors duration-150 group-hover:text-ink sm:text-[16px]">
+                        {link.value}
+                      </span>
+                      <ArrowUpRight
+                        size={14}
+                        className="shrink-0 translate-y-px text-mute transition-colors duration-150 group-hover:text-ink"
+                        aria-hidden
+                      />
                     </span>
-                    <ArrowUpRight size={13} className="text-olive-3 group-hover:text-olive transition-colors" />
-                  </div>
-                </a>
+                  </a>
+                </li>
               ))}
-            </div>
+            </ul>
           </motion.div>
         </div>
       </div>

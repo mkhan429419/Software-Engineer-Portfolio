@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* react-device-frameset — Marvel Devices CSS */
 @import './marvel-devices.css';
 
 :root {
@@ -17,38 +16,97 @@
 
 html {
   scroll-behavior: smooth;
-  background: #EDEBE1;
+  background: #FFFFFF;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 body {
-  background: #EDEBE1;
-  color: #2B3D18;
-  overflow-x: hidden;
-  font-family: var(--font-inter), system-ui, sans-serif;
+  background: #FFFFFF;
+  color: #3A3A3A;
+  overflow: visible;
+  font-family: var(--font-sans), "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #EDEBE1; }
-::-webkit-scrollbar-thumb { background: #B0BB98; border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: #7A8B60; }
+html::-webkit-scrollbar { width: 6px; }
+html::-webkit-scrollbar-track { background: #FFFFFF; }
+html::-webkit-scrollbar-thumb { background: #D8D4CF; border-radius: 3px; }
+html::-webkit-scrollbar-thumb:hover { background: #C4BFB8; }
 
-::selection { background: #D8DDC8; color: #2B3D18; }
+#home {
+  scrollbar-width: none;
+}
+#home::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+::selection { background: #FFBF88; color: #3A3A3A; }
 
 @layer utilities {
   .text-balance { text-wrap: balance; }
 
   .section-wrap {
-    @apply max-w-6xl mx-auto px-8 md:px-16 lg:px-24;
-  }
-
-  .serif-label {
-    @apply font-serif text-olive-3 text-sm italic font-medium;
+    @apply w-full max-w-[2200px] mx-auto px-6 md:px-12 lg:px-[3.1vw];
   }
 
   .mono-label {
-    @apply font-mono text-[10px] tracking-[0.08em] uppercase text-olive-3;
+    @apply font-mono text-[12px] tracking-[0.02em] text-mute;
   }
+
+  .peach-btn {
+    @apply inline-flex items-center justify-center bg-peach text-ink border border-ink rounded-lg px-5 py-2.5 text-[15px] font-sans font-normal hover:bg-peach-dark transition-colors duration-150;
+  }
+
+  .hero-kenburns {
+    animation: hero-kenburns 22s ease-in-out infinite alternate;
+    transform-origin: center top;
+  }
+}
+
+@keyframes hero-kenburns {
+  from { transform: scale(1) translate3d(0, 0, 0); }
+  to { transform: scale(1.14) translate3d(-3%, -2%, 0); }
+}
+
+.footer-cd-spin {
+  animation: footer-cd-spin 7s linear infinite;
+}
+
+@keyframes footer-cd-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 20px;
+}
+.eq span {
+  width: 3px;
+  height: 100%;
+  background: #3A3A3A;
+  border-radius: 1px;
+  transform-origin: bottom;
+  animation: eq-bounce 0.9s ease-in-out infinite;
+}
+.eq span:nth-child(2) { animation-delay: -0.3s; animation-duration: 0.75s; }
+.eq span:nth-child(3) { animation-delay: -0.6s; animation-duration: 1.05s; }
+.eq span:nth-child(4) { animation-delay: -0.15s; animation-duration: 0.85s; }
+.eq-paused span { animation-play-state: paused; transform: scaleY(0.25); }
+
+@keyframes eq-bounce {
+  0%, 100% { transform: scaleY(0.25); }
+  50% { transform: scaleY(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-kenburns { animation: none; }
+  .footer-cd-spin { animation: none; }
+  .eq span { animation: none; transform: scaleY(0.6); }
 }

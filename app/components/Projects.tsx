@@ -1,208 +1,294 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ChevronLeft, ChevronRight, MousePointer2 } from "lucide-react";
-import { DeviceFrameset } from "react-device-frameset";
-import { projects } from "@/app/lib/projects";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { useInView, useReducedMotion } from "framer-motion";
+import { projects, type Project } from "@/app/lib/projects";
+import { useYouTubePlayer } from "@/app/lib/useYouTubePlayer";
+import SectionHead from "./SectionHead";
+import PeachButton from "./PeachButton";
+import PlayerControls from "./PlayerControls";
+
+const SLIDE_MS = 5500;
+
+function youtubeId(url?: string | null) {
+  if (!url || url.includes("loom")) return null;
+  const match = url.match(/embed\/([^?]+)/);
+  return match?.[1] ?? null;
+}
+
+function loomSrc(url?: string | null) {
+  if (!url || !url.includes("loom")) return null;
+  const join = url.includes("?") ? "&" : "?";
+  return `${url}${join}hideEmbedTopBar=true&hide_title=true&hide_owner=true&hide_share=true&autoplay=1&muted=1`;
+}
+
+function SlideMedia({ project }: { project: Project }) {
+  return (
+    <div className="absolute inset-0 bg-[#111] overflow-hidden">
+      <img
+        src={project.image}
+        alt=""
+        draggable={false}
+        className="absolute inset-0 h-full w-full object-cover object-center"
+      />
+    </div>
+  );
+}
+
+function ProjectCopy({ project }: { project: Project }) {
+  return (
+    <>
+      <p className="text-[20px] md:text-[22px] lg:text-[28px] text-ink leading-tight break-words">
+        {project.name}
+      </p>
+      <p className="text-[18px] sm:text-[20px] lg:text-[22px] leading-none text-ink mt-4 mb-3 lg:mt-5 lg:mb-5" aria-hidden>
+        +
+      </p>
+      <p className="font-mono text-[16px] md:text-[18px] lg:text-[19px] text-ink leading-snug break-words">
+        {project.tag}
+      </p>
+      <p className="font-mono text-[16px] md:text-[18px] lg:text-[19px] text-ink leading-snug mt-2">
+        {project.date}
+      </p>
+      <div className="mt-4 lg:mt-5 flex flex-wrap items-center gap-2 sm:gap-2.5">
+        {project.github && (
+          <a
+            href={project.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${project.name} GitHub`}
+            onPointerDown={(e) => e.stopPropagation()}
+            className="inline-flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 text-ink hover:text-black transition-colors duration-150"
+          >
+            <FaGithub size={22} />
+          </a>
+        )}
+        {project.details && (
+          <a
+            href={project.details}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${project.name} details`}
+            onPointerDown={(e) => e.stopPropagation()}
+            className="inline-flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 text-ink hover:text-black transition-colors duration-150"
+          >
+            <FaLinkedin size={22} />
+          </a>
+        )}
+        <PeachButton
+          href={`/projects/${project.slug}`}
+          className="!px-4 !py-2 !text-[14px] sm:!px-5 sm:!py-2.5 sm:!text-[15px]"
+        >
+          View project
+        </PeachButton>
+      </div>
+    </>
+  );
+}
 
 export default function Projects() {
-  const router = useRouter();
-  const sectionRef = useRef<HTMLElement>(null);
-  const [current, setCurrent] = useState(0);
+  const root = useRef<HTMLElement>(null);
+  const inView = useInView(root, { margin: "-20% 0px" });
+  const reduce = useReducedMotion();
+  const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [screenRevealed, setScreenRevealed] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const [laptopZoom, setLaptopZoom] = useState(0.72);
+  const [seen, setSeen] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [canFullscreen, setCanFullscreen] = useState(false);
+  const startX = useRef<number | null>(null);
+  const mediaRef = useRef<HTMLDivElement>(null);
+  const mountRef = useRef<HTMLDivElement>(null);
+  const n = projects.length;
+  const project = projects[index];
+  const videoId = youtubeId(project.video);
+  const loom = loomSrc(project.video);
 
-  // Responsive zoom — keeps the MacBook frame inside the viewport on every screen size
+  const go = (dir: number) => setIndex((i) => (i + dir + n) % n);
+  const next = useCallback(() => setIndex((i) => (i + 1) % n), [n]);
+
   useEffect(() => {
-    const FRAME_WIDTH = 1320; // approximate MacBook Pro frame width at zoom 1
-    const update = () => {
-      const w = window.innerWidth;
-      // Reserve ~8% on each side so the frame never touches the edge
-      const ideal = (w * 0.84) / FRAME_WIDTH;
-      // Clamp between a legible minimum and the desktop maximum
-      setLaptopZoom(Math.max(0.21, Math.min(0.72, ideal)));
-    };
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
+    if (inView) setSeen(true);
+  }, [inView]);
+
+  // Preload every poster so the next slide never flashes a blank player.
+  useEffect(() => {
+    projects.forEach((p) => {
+      const img = new Image();
+      img.src = p.image;
+    });
   }, []);
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start 0.95", "center 0.38"],
+  const player = useYouTubePlayer(mountRef, videoId, {
+    enabled: seen,
+    visible: inView,
+    autoplay: !reduce,
+    onEnded: next,
   });
+  const hasYouTube = !!videoId && !player.failed;
+  const hasVideo = hasYouTube || !!loom;
 
-  const laptopRotateX = useTransform(scrollYProgress, [0, 0.78], [-74, 0]);
-  const clipTop = useTransform(scrollYProgress, [0.3, 0.88], [100, 0]);
-  const screenClip = useTransform(clipTop, (v) => `inset(${v}% 0% 0% 0%)`);
-  const frameOpacity = useTransform(scrollYProgress, [0, 0.15], [0, 1]);
+  // Video slides advance when the video ends; image-only slides use a timer.
+  useEffect(() => {
+    if (!inView || reduce || paused || hasVideo) return;
+    const id = setTimeout(next, SLIDE_MS);
+    return () => clearTimeout(id);
+  }, [inView, reduce, paused, hasVideo, index, next]);
 
   useEffect(() => {
-    return clipTop.on("change", (v) => {
-      if (v <= 2) setScreenRevealed(true);
-    });
-  }, [clipTop]);
+    setCanFullscreen(!!document.fullscreenEnabled);
+    const sync = () => setFullscreen(document.fullscreenElement === mediaRef.current);
+    document.addEventListener("fullscreenchange", sync);
+    return () => document.removeEventListener("fullscreenchange", sync);
+  }, []);
 
-  // Auto-advance carousel
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else mediaRef.current?.requestFullscreen?.();
+  };
+
   useEffect(() => {
-    if (paused) return;
-    const timer = setInterval(() => {
-      setCurrent((c) => (c + 1) % projects.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, [paused]);
+    if (!inView) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") setIndex((i) => (i - 1 + n) % n);
+      if (e.key === "ArrowRight") setIndex((i) => (i + 1) % n);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [inView, n]);
 
-  const prev = () => { setHovered(false); setPaused(true); setCurrent((c) => (c - 1 + projects.length) % projects.length); };
-  const next = () => { setHovered(false); setPaused(true); setCurrent((c) => (c + 1) % projects.length); };
-
-  // DeviceFrameset uses transform:scale so layout stays at full 960×600 frame size.
-  // Compensate by pulling in the wrapper with negative margins on mobile only.
-  const FRAME_H = 600;
-  const laptopMargin =
-    laptopZoom < 0.44
-      ? Math.round(-(FRAME_H * (1 - laptopZoom) / 2) + 20)
-      : 0;
+  const renderPager = (className: string) => (
+    <div className={`items-stretch overflow-hidden rounded-lg border border-ink bg-peach text-ink ${className}`}>
+      <button
+        type="button"
+        aria-label="Previous project"
+        onClick={() => go(-1)}
+        className="inline-flex h-9 w-9 items-center justify-center transition-colors duration-150 hover:bg-peach-dark sm:h-10 sm:w-11"
+      >
+        <ChevronLeft className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
+      </button>
+      <p className="flex min-w-[3.5rem] items-center justify-center px-0.5 text-center font-mono text-[12px] tabular-nums sm:min-w-[4.25rem] sm:px-1 sm:text-[13px]">
+        {project.num} / {String(n).padStart(2, "0")}
+      </p>
+      <button
+        type="button"
+        aria-label="Next project"
+        onClick={() => go(1)}
+        className="inline-flex h-9 w-9 items-center justify-center transition-colors duration-150 hover:bg-peach-dark sm:h-10 sm:w-11"
+      >
+        <ChevronRight className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
+      </button>
+    </div>
+  );
 
   return (
-    <section ref={sectionRef} id="projects" className="bg-cream py-10 md:py-28 relative" style={{ overflowX: "clip" }}>
-      {/* Top blobs */}
-      <div className="pointer-events-none absolute -top-16 -left-8 w-[220px] h-[220px] md:-top-40 md:-left-20 md:w-[560px] md:h-[560px] rounded-full" style={{ background: "radial-gradient(circle at 45% 40%, #E87848 0%, #F0A868 50%, transparent 72%)", filter: "blur(100px)", opacity: 0.28 }} />
-      <div className="hidden md:block pointer-events-none absolute -top-32 -right-20 w-[520px] h-[520px] rounded-full" style={{ background: "radial-gradient(circle at 50% 40%, #90B8E0 0%, #C0A0E0 50%, transparent 72%)", filter: "blur(100px)", opacity: 0.22 }} />
-      {/* Bottom blobs — relay into Stack (Stack has no bg so these stay visible) */}
-      <div className="pointer-events-none absolute -bottom-16 -left-8 w-[220px] h-[220px] md:-bottom-40 md:-left-20 md:w-[580px] md:h-[580px] rounded-full" style={{ background: "radial-gradient(circle at 45% 60%, #E87848 0%, #F0A868 50%, transparent 72%)", filter: "blur(100px)", opacity: 0.32 }} />
-      <div className="hidden md:block pointer-events-none absolute -bottom-32 -right-20 w-[540px] h-[540px] rounded-full" style={{ background: "radial-gradient(circle at 50% 60%, #90B8E0 0%, #C0A0E0 50%, transparent 72%)", filter: "blur(100px)", opacity: 0.25 }} />
+    <section id="projects" ref={root} className="bg-paper py-20 md:py-28 overflow-x-clip">
+      <div className="section-wrap">
+        <div className="relative mb-10 md:mb-14">
+          <SectionHead title="Projects" aside="Selected work" className="!mb-0" />
+          {/* lg+: prev / next sit in the heading row so they never cover the video */}
+          {renderPager("absolute right-0 top-0 hidden lg:flex")}
+        </div>
+      </div>
 
-      <div className="section-wrap relative z-10">
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-8 md:mb-14"
+      <div
+        className="relative w-full select-none"
+        onPointerEnter={() => setPaused(true)}
+        onPointerLeave={() => setPaused(false)}
+        onPointerDown={(e) => {
+          if (e.pointerType !== "mouse") startX.current = e.clientX;
+        }}
+        onPointerUp={(e) => {
+          if (startX.current == null) return;
+          const dx = e.clientX - startX.current;
+          startX.current = null;
+          if (dx > 40) go(-1);
+          else if (dx < -40) go(1);
+        }}
+      >
+        {/* Mobile/tablet: copy above the media. Desktop: frosted overlay on the video. */}
+        <div
+          className="px-6 md:px-12 mb-5 md:mb-6 max-w-[480px] lg:max-w-none lg:mb-0 lg:px-0 lg:absolute lg:z-20 lg:top-32 lg:left-[4%] lg:w-[min(400px,34%)]"
+          aria-live="polite"
         >
-          <p className="serif-label mb-4">Things I&rsquo;ve built</p>
-          <h2 className="font-serif font-bold text-olive leading-[0.92] tracking-tight" style={{ fontSize: "clamp(2.4rem, 5vw, 5rem)" }}>
-            Projects.
-          </h2>
-        </motion.div>
+          <div className="lg:w-full lg:bg-white/80 lg:rounded-[7px] lg:px-5 lg:py-5">
+            <ProjectCopy project={project} />
+          </div>
+        </div>
 
-        {/* MacBook carousel */}
-        <div className="flex flex-col items-center">
-          {/* Click hint */}
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="mb-6 serif-label flex items-center gap-2"
-          >
-            <MousePointer2 size={12} className="flex-shrink-0" />
-            Click any project to explore details
-          </motion.p>
+        <div
+          ref={mediaRef}
+          className="group/media relative mx-6 md:mx-12 lg:mx-0 rounded-[6px] lg:rounded-none bg-[#111] overflow-hidden aspect-[1.36] lg:aspect-auto lg:h-[min(75vw,100svh,1100px)]"
+        >
+          {projects.map((p, i) => (
+            <div
+              key={p.slug}
+              className="absolute inset-0 transition-opacity duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
+              style={{
+                opacity: i === index ? 1 : 0,
+                zIndex: i === index ? 1 : 0,
+                pointerEvents: i === index ? "auto" : "none",
+              }}
+              aria-hidden={i !== index}
+            >
+              <SlideMedia project={p} />
+            </div>
+          ))}
 
           <div
-            className="flex w-full justify-center overflow-visible"
-            style={{ marginTop: laptopMargin, marginBottom: laptopMargin }}
-          >
-            <div style={{ perspective: "1100px", perspectiveOrigin: "50% 60%" }}>
-              <motion.div style={{ opacity: frameOpacity, rotateX: laptopRotateX, transformOrigin: "center bottom" }} className="flex justify-center">
-                <DeviceFrameset device="MacBook Pro" zoom={laptopZoom}>
-                  <motion.div style={{ clipPath: screenRevealed ? "inset(0% 0% 0% 0%)" : screenClip, width: "100%", height: "100%", position: "relative", overflow: "hidden", background: "#080808" }}>
-                    {/* All slides always mounted — iframes stay loaded, no flash */}
-                    {projects.map((proj, i) => (
-                      <div
-                        key={proj.slug}
-                        style={{
-                          position: "absolute", inset: 0,
-                          transform: `translateX(${(i - current) * 100}%)`,
-                          transition: "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)",
-                        }}
-                      >
-                        {/* Gradient fallback */}
-                        <div style={{ position: "absolute", inset: 0, background: proj.screenBg }} />
-                        <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 50% 30%, ${proj.accent}45 0%, transparent 60%)`, opacity: 0.55 }} />
+            ref={mountRef}
+            aria-hidden
+            className={`pointer-events-none absolute inset-0 z-[2] overflow-hidden transition-opacity duration-500 [&>iframe]:absolute [&>iframe]:left-1/2 [&>iframe]:top-1/2 [&>iframe]:h-full [&>iframe]:w-full [&>iframe]:-translate-x-1/2 [&>iframe]:-translate-y-1/2 [&>iframe]:border-0 ${
+              fullscreen ? "[&>iframe]:scale-100" : "[&>iframe]:scale-[1.35] lg:[&>iframe]:scale-[1.45]"
+            } ${player.started ? "opacity-100" : "opacity-0"}`}
+          />
 
-                        {/* YouTube video — always loaded, no controls, muted, looping */}
-                        {proj.video && (
-                          <iframe
-                            src={`${proj.video}?autoplay=1&mute=1&controls=0&loop=1&playlist=${proj.video.split("/embed/")[1]?.split("?")[0]}&rel=0&modestbranding=1&disablekb=1`}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none", zIndex: 1, pointerEvents: "none" }}
-                          />
-                        )}
+          {loom && (
+            <iframe
+              key={loom}
+              src={inView || seen ? loom : undefined}
+              title={`${project.name} demo`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              allowFullScreen
+              className="absolute inset-0 z-[2] h-full w-full border-0"
+            />
+          )}
 
-                        {/* Bottom scrim + labels */}
-                        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 40%, transparent 65%)", pointerEvents: "none", zIndex: 2 }} />
-                        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "28px 44px", zIndex: 3, pointerEvents: "none" }}>
-                          <div style={{ fontFamily: "var(--font-mono)", fontSize: "13px", letterSpacing: "0.22em", marginBottom: "6px", color: proj.accent, textShadow: `0 0 18px ${proj.accent}99` }}>{proj.num}</div>
-                          <h3 style={{ fontFamily: "var(--font-serif)", fontWeight: 700, color: "#fff", fontSize: "48px", lineHeight: 1.05, marginBottom: "6px", textShadow: "0 2px 12px rgba(0,0,0,0.7)" }}>{proj.name}</h3>
-                          <p style={{ fontFamily: "var(--font-mono)", fontSize: "13px", letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.65)" }}>{proj.tag}</p>
-                        </div>
-
-                        {/* Hover overlay — only visible on the active slide */}
-                        {i === current && (
-                          <div style={{
-                            position: "absolute", inset: 0, zIndex: 3,
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            background: "rgba(0,0,0,0.28)",
-                            opacity: hovered ? 1 : 0,
-                            transition: "opacity 0.3s ease",
-                            pointerEvents: "none",
-                          }}>
-                            <div style={{
-                              display: "flex", alignItems: "center", gap: "10px",
-                              background: "rgba(255,255,255,0.12)",
-                              border: "1px solid rgba(255,255,255,0.25)",
-                              backdropFilter: "blur(8px)",
-                              borderRadius: "999px",
-                              padding: "12px 28px",
-                              transform: hovered ? "scale(1)" : "scale(0.92)",
-                              transition: "transform 0.3s ease",
-                            }}>
-                              <span style={{ fontFamily: "var(--font-mono)", fontSize: "13px", letterSpacing: "0.14em", color: "white" }}>
-                                View project
-                              </span>
-                              <span style={{ fontSize: "14px", color: "rgba(255,255,255,0.7)" }}>→</span>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Click-catcher — blocks iframe, triggers navigation */}
-                        <div
-                          onClick={() => router.push(`/projects/${proj.slug}`)}
-                          onMouseEnter={() => i === current && setHovered(true)}
-                          onMouseLeave={() => setHovered(false)}
-                          style={{ position: "absolute", inset: 0, zIndex: 4, cursor: "pointer" }}
-                        />
-                      </div>
-                    ))}
-
-                    {/* Arrows */}
-                    <button onClick={(e) => { e.stopPropagation(); prev(); }} style={{ position: "absolute", left: "16px", top: "50%", transform: "translateY(-50%)", width: "52px", height: "52px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.6)", border: "none", cursor: "pointer", zIndex: 20 }}>
-                      <ChevronLeft size={26} />
-                    </button>
-                    <button onClick={(e) => { e.stopPropagation(); next(); }} style={{ position: "absolute", right: "16px", top: "50%", transform: "translateY(-50%)", width: "52px", height: "52px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.6)", border: "none", cursor: "pointer", zIndex: 20 }}>
-                      <ChevronRight size={26} />
-                    </button>
-
-                    {/* Dots */}
-                    <div style={{ position: "absolute", bottom: "18px", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "12px", zIndex: 20 }}>
-                      {projects.map((_, i) => (
-                        <button key={i} onClick={(e) => { e.stopPropagation(); setPaused(true); setCurrent(i); }}
-                          style={{ width: "10px", height: "10px", borderRadius: "50%", border: "none", cursor: "pointer", background: i === current ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.22)", transition: "background 0.3s" }}
-                        />
-                      ))}
-                    </div>
-                  </motion.div>
-                </DeviceFrameset>
-              </motion.div>
+          {/* Below lg: prev / next overlay the top-right corner of the video */}
+          {!fullscreen && (
+            <div className="absolute right-3 top-3 z-20 md:right-4 md:top-4 lg:hidden">
+              {renderPager("flex")}
             </div>
-          </div>
+          )}
+
+          {hasYouTube && (
+            <>
+              <button
+                type="button"
+                tabIndex={-1}
+                aria-hidden
+                onClick={player.toggle}
+                className="absolute inset-0 z-10 cursor-pointer"
+              />
+              <PlayerControls
+                visible={(player.started || !!reduce) && !player.playing}
+                playing={player.playing}
+                current={player.current}
+                duration={player.duration}
+                loaded={player.loaded}
+                muted={player.muted}
+                rate={player.rate}
+                fullscreen={fullscreen}
+                canFullscreen={canFullscreen}
+                onToggle={player.toggle}
+                onSeek={player.seek}
+                onMute={() => player.setMuted(!player.muted)}
+                onRate={player.setRate}
+                onFullscreen={toggleFullscreen}
+              />
+            </>
+          )}
         </div>
       </div>
     </section>

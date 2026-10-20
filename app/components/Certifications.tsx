@@ -1,106 +1,69 @@
 "use client";
 
 import { motion } from "framer-motion";
+import SectionHead from "./SectionHead";
 
 const certs = [
   {
     name: "Machine Learning Specialization",
     issuer: "Coursera",
-    period: "Jun — Sep 2024",
-    color: "#0056D2",
+    period: "Jun 2024 - Sep 2024",
     skills: ["Supervised Learning", "Neural Networks", "Regression", "Classification", "TensorFlow"],
   },
   {
     name: "Complete JavaScript Course",
     issuer: "Udemy",
-    period: "Jun — Sep 2024",
-    color: "#A435F0",
+    period: "Jun 2024 - Sep 2024",
     skills: ["ES6+", "Async JS", "DOM Manipulation", "OOP", "Closures"],
   },
   {
     name: "Complete Web Development Course",
     issuer: "Udemy",
-    period: "Jun — Dec 2023",
-    color: "#A435F0",
+    period: "Jun 2023 - Dec 2023",
     skills: ["HTML / CSS", "JavaScript", "Node.js", "MongoDB", "REST APIs"],
   },
 ];
 
 export default function Certifications() {
   return (
-    <section id="certifications" className="bg-cream py-20 md:py-28 relative">
-      <div className="pointer-events-none absolute -top-16 -left-8 w-[220px] h-[220px] md:-top-40 md:-left-20 md:w-[560px] md:h-[560px] rounded-full" style={{ background: "radial-gradient(circle at 45% 40%, #E87848 0%, #F0A868 50%, transparent 72%)", filter: "blur(100px)", opacity: 0.28 }} />
-      <div className="hidden md:block pointer-events-none absolute -top-32 -right-20 w-[520px] h-[520px] rounded-full" style={{ background: "radial-gradient(circle at 50% 40%, #90B8E0 0%, #C0A0E0 50%, transparent 72%)", filter: "blur(100px)", opacity: 0.22 }} />
+    <section id="certifications" className="bg-paper py-20 md:py-28">
+      <div className="section-wrap">
+        <SectionHead title="Certifications" aside="Courses" />
 
-      <div className="section-wrap relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-14"
-        >
-          <p className="serif-label mb-4">Courses & credentials</p>
-          <h2
-            className="font-serif font-bold text-olive leading-[0.92] tracking-tight"
-            style={{ fontSize: "clamp(2.4rem, 5vw, 5rem)" }}
-          >
-            Certifications.
-          </h2>
-        </motion.div>
-
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-12 md:gap-16">
           {certs.map((c, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 16 }}
+            <motion.article
+              key={c.name}
+              initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-20px" }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="group flex items-start gap-6 py-7 md:py-8 border-t border-olive-5"
+              viewport={{ once: true, margin: "-30px" }}
+              transition={{ duration: 0.45, delay: i * 0.05 }}
+              className="grid grid-cols-1 gap-y-5 lg:grid-cols-[max(calc(23.3%-1.5rem),16.5rem)_minmax(0,1fr)] lg:gap-x-6 lg:gap-y-0"
             >
-              {/* Coloured left accent bar */}
-              <div
-                className="w-1 self-stretch rounded-full flex-shrink-0 mt-1"
-                style={{ backgroundColor: c.color, minHeight: "48px" }}
-              />
+              {/* Date / platform column, aligned under the section heading's aside */}
+              <div className="font-mono text-[16px] leading-snug text-ink md:text-[18px] 2xl:text-[21px]">
+                <p>{c.period}</p>
+                <p className="mt-1 text-mute md:mt-2">{c.issuer}</p>
+              </div>
 
-              <div className="flex-1 min-w-0">
-                {/* Issuer + period */}
-                <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <span
-                    className="font-mono text-[10px] tracking-[0.1em] uppercase font-semibold"
-                    style={{ color: c.color }}
-                  >
-                    {c.issuer}
-                  </span>
-                  <span className="text-olive-4">·</span>
-                  <span className="font-mono text-[11px] text-olive-3">{c.period}</span>
-                </div>
-
-                {/* Certificate name */}
-                <h3
-                  className="font-serif font-bold text-olive leading-tight mb-3"
-                  style={{ fontSize: "clamp(1.1rem, 2.2vw, 1.4rem)" }}
-                >
+              <div className="min-w-0 max-w-[1100px] 2xl:max-w-[1400px]">
+                <h3 className="break-words text-[20px] font-normal leading-tight tracking-tight text-ink md:text-[22px] lg:text-[24px] 2xl:text-[26px]">
                   {c.name}
                 </h3>
 
-                {/* Skills */}
-                <div className="flex flex-wrap gap-1.5">
+                <ul className="mt-6 flex flex-wrap gap-2">
                   {c.skills.map((s) => (
-                    <span
+                    <li
                       key={s}
-                      className="font-mono text-[10px] tracking-[0.04em] px-2.5 py-1 rounded-full text-olive-3 border border-olive-4"
+                      className="rounded-md border border-ink/25 px-3 py-2 text-[14px] leading-none text-ink sm:text-[15px]"
                     >
                       {s}
-                    </span>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
-            </motion.div>
+            </motion.article>
           ))}
-          <div className="border-t border-olive-5" />
         </div>
       </div>
     </section>

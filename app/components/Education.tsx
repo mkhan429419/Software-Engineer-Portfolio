@@ -1,20 +1,41 @@
 "use client";
 
 import { motion } from "framer-motion";
+import SectionHead from "./SectionHead";
 
-const education = [
+const education: {
+  period: string;
+  location: string;
+  note: string | null;
+  school: string;
+  aka: string | null;
+  degree: string;
+  tags: string[];
+  gradeLabel: string;
+  grade: string;
+  highlights: string[];
+  courses: string[];
+  abbr: string;
+  logo: string;
+  logoBg: string;
+  logoBlend: boolean;
+}[] = [
   {
-    period: "Sep 2022 — May 2026",
-    degree: "Bachelor of Software Engineering (BESE)",
-    school: "National University of Sciences & Technology",
-    abbr: "NUST",
-    logo: "/nust.png",
-    logoBg: "#fff",
-    logoBlend: true,          // mix-blend-mode: lighten strips the black bg from the logo
+    period: "Sep 2022 – Jun 2026",
     location: "Islamabad, Pakistan",
-    gpa: "3.32 / 4.0",
-    current: false,
-    note: "Graduated May 2026",
+    note: null,
+    school: "National University of Sciences and Technology (NUST)",
+    aka: null,
+    degree: "Bachelor of Engineering - BE, Software Engineering",
+    tags: [],
+    gradeLabel: "CGPA",
+    grade: "3.39 / 4.00",
+    highlights: [
+      "Admitted into the country's #1 engineering school, with a <2% acceptance rate.",
+      "Won the Rector's Gold Medal among 40+ teams for best final-year project (CyberShield).",
+      "Won 3rd best industry project among 40+ teams for my final-year project (CyberShield).",
+      "Received a GPA-based scholarship.",
+    ],
     courses: [
       "Data Structures & Algorithms",
       "Machine Learning",
@@ -22,126 +43,119 @@ const education = [
       "Cloud Computing",
       "Web Engineering",
     ],
+    abbr: "NUST",
+    logo: "/nust.png",
+    logoBg: "#fff",
+    logoBlend: true,
   },
   {
-    period: "May 2012 — May 2022",
-    degree: "O / A Levels",
-    school: "The International School of Choueifat",
+    period: "Jun 2012 – Jun 2022",
+    location: "Abu Dhabi, UAE",
+    note: null,
+    school: "SABIS International School – Abu Dhabi",
+    aka: null,
+    degree: "American High School Diploma, Mathematics and Computer Science",
+    tags: [],
+    gradeLabel: "Grade",
+    grade: "97 / 100",
+    highlights: ["Earned the UAE's 10-year Golden Visa for outstanding academic performance."],
+    courses: [],
     abbr: "ISCAD",
     logo: "/iscad.png",
     logoBg: "#fff",
     logoBlend: false,
-    location: "Abu Dhabi, UAE",
-    gpa: null,
-    current: false,
-    note: null,
-    courses: [],
   },
 ];
 
 export default function Education() {
   return (
-    <section id="education" className="bg-cream pt-20 pb-10 md:pt-28 md:pb-14 relative">
-      {/* Top-left coral — bleeds up into Stack's lower area */}
-      <div className="pointer-events-none absolute -top-16 -left-8 w-[220px] h-[220px] md:-top-40 md:-left-20 md:w-[560px] md:h-[560px] rounded-full" style={{ background: "radial-gradient(circle at 45% 40%, #E87848 0%, #F0A868 50%, transparent 72%)", filter: "blur(100px)", opacity: 0.28 }} />
-      {/* Top-right blue-purple — bleeds up into Stack's lower area */}
-      <div className="hidden md:block pointer-events-none absolute -top-32 -right-20 w-[520px] h-[520px] rounded-full" style={{ background: "radial-gradient(circle at 50% 40%, #90B8E0 0%, #C0A0E0 50%, transparent 72%)", filter: "blur(100px)", opacity: 0.22 }} />
-      <div className="section-wrap relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-14"
-        >
-          <p className="serif-label mb-4">Academic background</p>
-          <h2
-            className="font-serif font-bold text-olive leading-[0.92] tracking-tight"
-            style={{ fontSize: "clamp(2.4rem, 5vw, 5rem)" }}
-          >
-            Education.
-          </h2>
-        </motion.div>
+    <section id="education" className="bg-paper py-20 md:py-28">
+      <div className="section-wrap">
+        <SectionHead title="Education" aside="Background" />
 
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-12 md:gap-16">
           {education.map((e, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 16 }}
+            <motion.article
+              key={e.abbr}
+              initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-30px" }}
-              transition={{ duration: 0.55, delay: i * 0.1 }}
-              className="group py-8 md:py-10 border-t border-olive-5 first:border-t-0"
+              transition={{ duration: 0.45, delay: i * 0.05 }}
+              className="grid grid-cols-1 gap-y-5 lg:grid-cols-[max(calc(23.3%-1.5rem),16.5rem)_minmax(0,1fr)] lg:gap-x-6 lg:gap-y-0"
             >
-              <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-10">
+              {/* Date / place column, aligned under the section heading's aside */}
+              <div className="font-mono text-[16px] leading-snug text-ink md:text-[18px] 2xl:text-[21px]">
+                <p>{e.period}</p>
+                <p className="mt-1 text-mute md:mt-2">{e.location}</p>
+                {e.note && <p className="mt-1 text-[14px] text-mute md:mt-2 2xl:text-[16px]">{e.note}</p>}
+              </div>
 
-                {/* Logo badge */}
-                <div
-                  className="w-12 h-12 rounded-xl flex-shrink-0 overflow-hidden mt-1"
-                  style={{ backgroundColor: e.logoBg }}
-                >
-                  <img
-                    src={e.logo}
-                    alt={e.abbr}
-                    className="w-full h-full object-contain p-1"
-                    style={e.logoBlend ? { filter: "invert(1) hue-rotate(180deg) brightness(0.6)" } : undefined}
-                  />
-                </div>
-
-                {/* Main content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-2">
-                    <h3
-                      className="font-serif font-bold text-olive leading-tight"
-                      style={{ fontSize: "clamp(1.25rem, 2.5vw, 1.75rem)" }}
-                    >
-                      {e.degree}
+              <div className="min-w-0 max-w-[1100px] 2xl:max-w-[1400px]">
+                <div className="flex items-center gap-4">
+                  <div
+                    className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-xl border border-ink/15 md:h-12 md:w-12"
+                    style={{ backgroundColor: e.logoBg }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={e.logo}
+                      alt={e.abbr}
+                      className="h-full w-full object-contain p-1"
+                      style={e.logoBlend ? { filter: "invert(1) hue-rotate(180deg) brightness(0.6)" } : undefined}
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="break-words text-[20px] font-normal leading-tight tracking-tight text-ink md:text-[22px] lg:text-[24px] 2xl:text-[26px]">
+                      {e.school}
                     </h3>
-                    {e.current && (
-                      <span className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.08em] uppercase text-[#22C55E] flex-shrink-0">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse-slow" />
-                        current
-                      </span>
-                    )}
+                    {e.aka && <p className="mt-1 text-[15px] text-mute md:text-[16px]">{e.aka}</p>}
                   </div>
-
-                  <p className="text-olive-2 font-medium text-[15px] mb-2">{e.school}</p>
-
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className="font-mono text-[11px] text-olive-3">{e.period}</span>
-                    <span className="text-olive-4">·</span>
-                    <span className="font-mono text-[11px] text-olive-3">{e.location}</span>
-                    {e.note && (
-                      <>
-                        <span className="text-olive-4">·</span>
-                        <span className="font-mono text-[11px] text-olive-3">{e.note}</span>
-                      </>
-                    )}
-                  </div>
-
-                  {e.courses.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {e.courses.map((c) => (
-                        <span
-                          key={c}
-                          className="font-mono text-[10px] tracking-[0.04em] px-2.5 py-1 rounded-full text-olive-3 border border-olive-4"
-                        >
-                          {c}
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </div>
 
-                {/* GPA — understated, just metadata */}
-                {e.gpa && (
-                  <div className="flex-shrink-0 md:text-right">
-                    <p className="font-mono text-[11px] tracking-[0.08em] uppercase text-olive-3 mb-1">CGPA</p>
-                    <p className="font-serif text-olive-2 font-semibold text-xl">{e.gpa}</p>
-                  </div>
+                <p className="mt-5 font-mono text-[16px] leading-snug text-ink md:text-[18px]">
+                  {e.degree}
+                </p>
+
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-2 rounded-lg border border-ink bg-peach px-3 py-2 text-[14px] leading-none text-ink sm:text-[15px]">
+                    <span className="text-ink/70">{e.gradeLabel}</span>
+                    {e.grade}
+                  </span>
+                  {e.tags.map((t) => (
+                    <span
+                      key={t}
+                      className="inline-flex items-center rounded-lg border border-ink/25 px-3 py-2 text-[14px] leading-none text-ink sm:text-[15px]"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+
+                <ul className="mt-6 flex flex-col gap-3 text-[16px] leading-[1.5] text-ink lg:text-[17px] 2xl:text-[20px]">
+                  {e.highlights.map((h) => (
+                    <li key={h} className="flex items-baseline gap-3">
+                      <span aria-hidden className="shrink-0 font-mono">
+                        +
+                      </span>
+                      <span className="break-words">{h}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {e.courses.length > 0 && (
+                  <ul className="mt-6 flex flex-wrap gap-2">
+                    {e.courses.map((c) => (
+                      <li
+                        key={c}
+                        className="rounded-md border border-ink/25 px-3 py-2 text-[14px] leading-none text-ink sm:text-[15px]"
+                      >
+                        {c}
+                      </li>
+                    ))}
+                  </ul>
                 )}
               </div>
-            </motion.div>
+            </motion.article>
           ))}
         </div>
       </div>

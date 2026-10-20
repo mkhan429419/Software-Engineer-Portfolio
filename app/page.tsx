@@ -12,7 +12,7 @@ import Footer from "./components/Footer";
 
 export default function Home() {
   return (
-    <main className="bg-cream relative">
+    <main className="bg-paper relative">
       <Navbar />
       <Hero />
       <About />

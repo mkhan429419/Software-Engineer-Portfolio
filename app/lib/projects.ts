@@ -14,10 +14,10 @@ export const projects = [
       "Clerk", "AWS", "Twilio", "Gemini API", "ElevenLabs",
       "Cloudinary", "Vercel", "ML Pipelines", "Deep Learning", "Git", "Nodemailer",
     ],
-    achievement: "3rd Best Industry Project · NUST Open House 2026 (40+ teams)",
+    achievement: "Rector's Gold Medal for Best Final Year Project · NUST SEECS (40+ teams)",
     achievements: [
+      "Won the Rector's Gold Medal for Best Final Year Project · NUST SEECS (40+ teams)",
       "3rd Best Industry Project · NUST Open House 2026 (40+ teams)",
-      "Shortlisted for Rector's Gold Medal Presentation",
       "AI, Cyber Hackathon & Drone Swarm Gala · 20+ participating teams",
     ],
     github: "https://github.com/mkhan429419/Cybershield-Backend",
@@ -36,7 +36,7 @@ export const projects = [
     problemSolved:
       "Developed a system to help car dealerships visualize performance, manage customer profiles, and analyze sentiment in one place.",
     description:
-      "Built a performance dashboard to track customer stats, using AWS Comprehend to analyze customer sentiment collected from dynamic customer feedback pages — developed in a team of 3 fellows.",
+      "Built a performance dashboard to track customer stats, using AWS Comprehend to analyze customer sentiment collected from dynamic customer feedback pages - developed in a team of 3 fellows.",
     stack: [
       "Next.js", "AWS DynamoDB", "TypeScript", "Tailwind",
       "MagicUI", "Clerk", "AWS Comprehend", "Nodemailer", "Vercel",
@@ -100,7 +100,7 @@ export const projects = [
     slug: "cardhunt",
     num: "05",
     name: "CardHunt",
-    tag: "Headstarter AI Project",
+    tag: "Headstarter AI Project · 25+ users",
     date: "Aug 2024",
     problemSolved:
       "Developed a platform to help users of all backgrounds connect and discover AI-powered flashcards.",
@@ -137,7 +137,7 @@ export const projects = [
     achievements: [],
     github: "https://github.com/AimenMunawarDeveloper/Crime-Script-Analysis-Using-NLP",
     details: "https://www.linkedin.com/posts/aimen-munawar-235852247_i-wanted-to-share-a-project-we-worked-on-ugcPost-7413918005589573632-C9SS",
-    image: "/projects/crime-script-nlp.png",
+    image: "/projects/crime-script-nlp-thumb.jpg",
     video: "https://www.youtube.com/embed/52Ycx57Ubck",
     screenBg: "linear-gradient(135deg, #1a0505 0%, #2d0a0a 50%, #110303 100%)",
     accent: "#EF4444",
@@ -160,7 +160,7 @@ export const projects = [
     achievements: [],
     github: "https://github.com/mkhan429419/Cloud-Computing-Project",
     details: "https://www.linkedin.com/posts/aimen-munawar-235852247_vynx-demo-activity-7294993345875984384-udk2",
-    image: "/projects/vynx.png",
+    image: "/projects/vynx-thumb.jpg",
     video: "https://www.loom.com/embed/0b2aff6cfdd542d19d47c0f54ae36ac3",
     screenBg: "linear-gradient(135deg, #020d18 0%, #041a2e 50%, #010c16 100%)",
     accent: "#06B6D4",
@@ -206,7 +206,7 @@ export const projects = [
     achievements: [],
     github: "https://github.com/mkhan429419/AI-customer-assistance",
     details: "https://www.linkedin.com/posts/maheen-akhtar-khan-377082267_softwareengineering-fullstackdevelopment-activity-7228507196605513728-DNxD",
-    image: "/projects/assist-ai.png",
+    image: "/projects/assist-ai-thumb.jpg",
     video: "https://www.youtube.com/embed/AB0rmxWoKZg",
     screenBg: "linear-gradient(135deg, #08021a 0%, #130530 50%, #050112 100%)",
     accent: "#7C3AED",
@@ -229,7 +229,7 @@ export const projects = [
     achievements: ["Top 20 Teams · 48-hour Hackathon"],
     github: "https://github.com/javeria2108/SmartDocs",
     details: "https://www.linkedin.com/posts/maheen-akhtar-khan-377082267_hackathon-smartdocs-ai-activity-7223309324415098880-7gic",
-    image: "/projects/smartdocs.png",
+    image: "/projects/smartdocs-thumb.jpg",
     video: "https://www.youtube.com/embed/npgJXWY1jSE",
     screenBg: "linear-gradient(135deg, #020c1e 0%, #041830 50%, #010910 100%)",
     accent: "#2563EB",
@@ -252,7 +252,7 @@ export const projects = [
     achievements: [],
     github: "https://github.com/mkhan429419/DataHub",
     details: "https://www.linkedin.com/posts/maheen-akhtar-khan-377082267_excited-to-share-my-latest-project-datahub-activity-7210630278006923264-v1W5",
-    image: "/projects/datahub.png",
+    image: "/projects/datahub-thumb.jpg",
     video: "https://www.youtube.com/embed/3nPC1hVMlnY",
     screenBg: "linear-gradient(135deg, #021208 0%, #041f0e 50%, #010b05 100%)",
     accent: "#10B981",
@@ -287,7 +287,7 @@ export const projects = [
     tag: "DSA Project",
     date: "Nov 2023 – Dec 2023",
     problemSolved:
-      "Built a prototype search engine inspired by Google's architecture to demonstrate core information retrieval concepts — crawling, indexing, and relevance ranking.",
+      "Built a prototype search engine inspired by Google's architecture to demonstrate core information retrieval concepts - crawling, indexing, and relevance ranking.",
     description:
       "Deployed on the NELA-GT 2022 dataset (100,000 articles) with forward and inverted indexes, BM-25F and Cosine Similarity ranking algorithms, support for single and multi-word queries, dynamic content addition, and a Django frontend. Developed in a team of 3.",
     stack: [
@@ -298,7 +298,7 @@ export const projects = [
     achievements: [],
     github: "https://github.com/tehreemahmad149/DSAProject",
     details: "https://www.linkedin.com/posts/umair-gosal-227b54201_hi-linkedin-fam-in-collaboration-with-ugcPost-7166062280969764864-NOFk",
-    image: "/projects/searchify.png",
+    image: "/projects/searchify-thumb.jpg",
     video: "https://www.youtube.com/embed/1-5im1gsidk",
     screenBg: "linear-gradient(135deg, #06040e 0%, #0e0820 50%, #040309 100%)",
     accent: "#6366F1",
