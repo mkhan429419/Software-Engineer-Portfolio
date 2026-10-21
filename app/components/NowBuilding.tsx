@@ -21,7 +21,7 @@ const tracks = [
   },
   {
     title: "Cortex Dashboard",
-    sub: "Headstarter Hiring Hackathon 2 · Finalist",
+    sub: "Headstarter AI Hiring Hackathon 2 · Finalist",
     stack: ["Next.js", "DynamoDB", "AWS Comprehend"],
     href: "/projects/cortex",
     cta: "View project",

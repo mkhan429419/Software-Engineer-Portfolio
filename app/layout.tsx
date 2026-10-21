@@ -19,7 +19,7 @@ const mono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "Maheen Akhtar Khan - Software Engineer",
   description:
-    "Software Engineer with 2 years of experience building production-grade backend systems, AI integrations, and full-stack products. UAE Golden Visa Holder.",
+    "Software Engineer with 2 years of experience building production-grade backend systems, AI integrations, and full-stack products. UAE Golden Visa Holder (Outstanding Student Category).",
   keywords: ["Software Engineer", "Backend", "Node.js", "TypeScript", "AWS", "AI"],
   openGraph: {
     title: "Maheen Akhtar Khan - Software Engineer",
