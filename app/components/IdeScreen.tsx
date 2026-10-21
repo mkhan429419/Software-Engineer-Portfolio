@@ -37,8 +37,10 @@ function highlight(text: string) {
   const out: ReactNode[] = [];
   let last = 0;
   let key = 0;
-  for (const m of text.matchAll(TOKEN)) {
-    const i = m.index ?? 0;
+  TOKEN.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = TOKEN.exec(text))) {
+    const i = m.index;
     if (i > last) out.push(text.slice(last, i));
     const color = m[1]
       ? COLORS.comment
